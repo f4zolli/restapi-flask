@@ -1,6 +1,6 @@
 # IMPORTANDO AS TECNOLOGIAS
 from flask import Flask
-from flask_restful import Resource, Api
+from flask_restful import Resource, Api, reqparse
 from flask_mongoengine import MongoEngine
 
 # CRIANDO A APLICAÇÃO
@@ -15,6 +15,33 @@ app.config['MONGODB_SETTINGS'] = {
     'password': 'admin'
 
 }
+
+_user_parser = reqparse.RequestParser()
+_user_parser.add_argument('first_name',
+                          type=str,
+                          required=True,
+                          help="This field cannot be blank."
+                          )
+_user_parser.add_argument('last_name',
+                          type=str,
+                          required=True,
+                          help="This field cannot be blank."
+                          )
+_user_parser.add_argument('cpf',
+                          type=str,
+                          required=True,
+                          help="This field cannot be blank."
+                          )
+_user_parser.add_argument('email',
+                          type=str,
+                          required=True,
+                          help="This field cannot be blank."
+                          )
+_user_parser.add_argument('birth_date',
+                          type=str,
+                          required=True,
+                          help="This field cannot be blank."
+                          )
 
 api = Api(app)  # EXTENDENDO O OBJETO (APP) CRIANDO AS CLASSES (API)
 db = MongoEngine(app)  # CLASSE DB
@@ -48,7 +75,8 @@ class Users(Resource):
 
 class User(Resource):
     def post(self):
-        return {"message": "teste"}
+        data = _user_parser.parse_args()
+        UserModel(**data).save()
 
     def get(self, cpf):
         return {"message": "CPF"}
