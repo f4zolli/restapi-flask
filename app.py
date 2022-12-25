@@ -5,6 +5,17 @@ from flask_mongoengine import MongoEngine
 
 # CRIANDO A APLICAÇÃO
 app = Flask(__name__)
+
+# CONECTANDO O BANCO .CONFIG
+app.config['MONGODB_SETTINGS'] = {
+    'db': 'users',
+    'host': 'mongodb',
+    'port': 27017,
+    'username': 'admin',
+    'password': 'admin'
+
+}
+
 api = Api(app)  # EXTENDENDO O OBJETO (APP) CRIANDO AS CLASSES (API)
 db = MongoEngine(app)  # CLASSE DB
 
