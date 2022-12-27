@@ -1,10 +1,12 @@
 # IMPORTANDO AS TECNOLOGIAS
 # CONFIGURAÇÕES DO RESTAPI
 from flask import jsonify
+from flask import Flask
 from flask_restful import Resource, reqparse
 from mongoengine import NotUniqueError
 from .model import UserModel
 import re
+
 
 _user_parser = reqparse.RequestParser()
 _user_parser.add_argument('first_name',
@@ -91,3 +93,15 @@ class User(Resource):
         if response:
             return jsonify(response)
         return {"message": "User does not exist in database!"}, 400
+
+
+    def delete(self, cpf):
+        UserModel.objects(cpf=cpf).delete()
+        return '', 204
+
+    # def delete(self, cpf):
+    #    response = UserModel.objects(cpf=cpf)
+
+    #    if response:
+    #       return jsonify(response)
+    #   return {"message": "User deleted!"}, 204
