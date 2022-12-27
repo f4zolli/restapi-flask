@@ -48,15 +48,16 @@ class User(Resource):
     def validate_cpf(self, cpf):
 
         # Has the correct mask?
-        if not re.match(r'\d{3}\.\d{3}\.\d{3}-\d{2}$', cpf):
-            return False
+        if not re.match(r'\d{11}', cpf):
+           return False
+        # re.sub('[^A-Za-z0-9]+', '', cpf)
 
         # Grab only numbers
         numbers = [int(digit) for digit in cpf if digit.isdigit()]
 
         # Does it have 11 digits?
-        if len(numbers) != 11 or len(set(numbers)) == 1:
-            return False
+        # if len(numbers) != 11 or len(set(numbers)) == 1:
+        #   return False
 
         # Validate first digit after -
         sum_of_products = sum(a*b for a, b in zip(numbers[0:9],
@@ -88,7 +89,8 @@ class User(Resource):
             return {"message": "CPF already exists in database!"}, 400
 
     def get(self, cpf):
-        response = UserModel.objects(cpf=cpf)
+        s_cpf = re.sub('[^A-Za-z0-9]+', '', cpf)
+        response = UserModel.objects(cpf=s_cpf)
 
         if response:
             return jsonify(response)
@@ -96,7 +98,8 @@ class User(Resource):
 
 
     def delete(self, cpf):
-        UserModel.objects(cpf=cpf).delete()
+        s_cpf = re.sub('[^A-Za-z0-9]+', '', cpf)
+        UserModel.objects(cpf=s_cpf).delete()
         return '', 204
 
     # def delete(self, cpf):
