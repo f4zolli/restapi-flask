@@ -35,6 +35,7 @@ class TestApplication():
         response = client.get('/users')
         assert response.status_code == 200
 
+    # testando metodo post no user
     def test_post_user(self, client, valid_user, invalid_user):
         response = client.post('/user', json=valid_user)
         assert response.status_code == 200
@@ -43,3 +44,20 @@ class TestApplication():
         response = client.post('/user', json=invalid_user)
         assert response.status_code == 400
         assert b"invalid" in response.data
+
+    # testando get no user criado no ultimo teste
+    def test_get_user(self, client, valid_user, invalid_user):
+        response = client.get('/user/%s' % valid_user["cpf"])
+        assert response.status_code == 200
+        assert response.json[0]["first_name"] == "Fix"
+        assert response.json[0]["last_name"] == "Test"
+        assert response.json[0]["cpf"] == "05100646047"
+        assert response.json[0]["email"] == "fix_test@teste.com"
+
+        # alteracao feita por conta do tamanho da linha
+        birth_date = response.json[0]["birth_date"]["$date"]
+        assert birth_date == "2000-10-01T00:00:00Z"
+
+        response = client.get('/user/%s' % invalid_user["cpf"])
+        assert response.status_code == 400
+        assert b"not exist" in response.data
