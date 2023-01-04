@@ -100,10 +100,12 @@ class User(Resource):
         s_cpf = re.sub('[^A-Za-z0-9]+', '', cpf)
         UserModel.objects(cpf=s_cpf).delete()
         return '', 204
+    
+    def patch(self, cpf):
+        data = _user_parser.parse_args()
 
-    # def delete(self, cpf):
-    #    response = UserModel.objects(cpf=cpf)
+        if not self.validate_cpf(data["cpf"]):
+          return {"message": "CPF is invalid!"}, 400
 
-    #    if response:
-    #       return jsonify(response)
-    #   return {"message": "User deleted!"}, 204
+        response = UserModel.objects(cpf=cpf).update(**data)
+        return {"message": "User %s successfully updated!" % response}
