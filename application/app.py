@@ -78,7 +78,7 @@ class User(Resource):
         data = _user_parser.parse_args()
 
         if not self.validate_cpf(data["cpf"]):
-            return {"message": "CPF is invalid! You must only enter numbers"}, 400
+            return {"message": "CPF is invalid! Only numbers"}, 400
 
         # Try Catch (Tratamento de Erro) in save
         try:
