@@ -1,7 +1,6 @@
 # IMPORTANDO AS TECNOLOGIAS
 # CONFIGURAÇÕES DO RESTAPI
 from flask import jsonify
-from flask import Flask
 from flask_restful import Resource, reqparse
 from mongoengine import NotUniqueError
 from .model import UserModel
@@ -79,7 +78,7 @@ class User(Resource):
         data = _user_parser.parse_args()
 
         if not self.validate_cpf(data["cpf"]):
-            return {"message": "CPF is invalid!"}, 400
+            return {"message": "CPF is invalid! You must only enter numbers"}, 400
 
         # Try Catch (Tratamento de Erro) in save
         try:
@@ -98,14 +97,23 @@ class User(Resource):
 
     def delete(self, cpf):
         s_cpf = re.sub('[^A-Za-z0-9]+', '', cpf)
-        UserModel.objects(cpf=s_cpf).delete()
-        return '', 204
-    
+        response = UserModel.objects(cpf=s_cpf).delete()
+
+        if response:
+            return {"message": "User %s successfully deleted!" % response}
+        return {"message": "User no exists in database!"}, 400
+
     def patch(self, cpf):
         data = _user_parser.parse_args()
+        s_cpf = re.sub('[^A-Za-z0-9]+', '', cpf)
 
         if not self.validate_cpf(data["cpf"]):
-          return {"message": "CPF is invalid!"}, 400
+            return {"message": "CPF is invalid!"}, 400
 
-        response = UserModel.objects(cpf=cpf).update(**data)
-        return {"message": "User %s successfully updated!" % response}
+        try:
+            response = UserModel.objects(cpf=s_cpf).update(**data)
+            if response:
+                return {"message": "User %s successfully updated!" % response}
+            return {"message": "User no exists in database!"}, 400
+        except NotUniqueError:
+            return {"message": "CPF already exists in database!"}, 400
