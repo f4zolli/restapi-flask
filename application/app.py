@@ -49,7 +49,7 @@ class User(Resource):
 
         # Has the correct mask?
         if not re.match(r'\d{11}', cpf):
-           return False
+            return False
         # re.sub('[^A-Za-z0-9]+', '', cpf)
 
         # Grab only numbers
@@ -95,7 +95,6 @@ class User(Resource):
         if response:
             return jsonify(response)
         return {"message": "User does not exist in database!"}, 400
-
 
     def delete(self, cpf):
         s_cpf = re.sub('[^A-Za-z0-9]+', '', cpf)
