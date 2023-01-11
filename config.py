@@ -12,6 +12,23 @@ class DevConfig():
     }
 
 
+class ProdConfig:
+
+    MONGODB_USER = os.getenv('MONGODB_USER')
+    MONGODB_PASSWORD = os.getenv('MONGODB_PASSWORD')
+    MONGODB_HOST = os.getenv('MONGODB_HOST')
+    MONGODB_DB = os.getenv('MONGODB_DB')
+
+    MONGODB_SETTINGS = {
+        'host': 'mongodb+srv://%s:%s@%s/%s?retryWrites=true&w=majority' % (
+            MONGODB_USER,
+            MONGODB_PASSWORD,
+            MONGODB_HOST,
+            MONGODB_DB
+        )
+    }
+
+
 class MockConfig:
 
     MONGODB_SETTINGS = {
